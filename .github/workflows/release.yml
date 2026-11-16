@@ -13,7 +13,7 @@ name: Release
 #
 # It reads the caller's package.json: the tag is `<slug>-v<version>` and the
 # asset `<slug>-v<version>.zip` — the names wp-sites pins and downloads. A merge
-# whose version already has a release publishes nothing, so only a merged
+# whose version already has a release or tag publishes nothing, so only a merged
 # `wp-build release` PR (a version bump) releases. Nothing deploys from here:
 # sites are deployed by wp-sites.
 
@@ -62,8 +62,10 @@ jobs:
           TAG: ${{ steps.meta.outputs.tag }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            echo "Release $TAG already exists — nothing to do."
+          # A tag without a release counts too: releases made before the split
+          # live in the archived monorepos, but their tags came along.
+          if gh release view "$TAG" >/dev/null 2>&1 || git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo "$TAG is already released (or tagged) — nothing to do."
             echo "released=false" >> "$GITHUB_OUTPUT"
           else
             echo "released=true" >> "$GITHUB_OUTPUT"
