@@ -75,7 +75,11 @@ plugin on the site.
   (synchronous, before the save) and `Integrations/webstarter-reviews.php`
   (after the save).
 - **A plugin that depends on another** says so in its plugin header
-  (`Requires Plugins:`) and checks the version it needs at runtime.
+  (`Requires Plugins:`) and checks the version it needs at runtime. A plugin
+  that works only with certain versions of another — required or optional —
+  declares the lowest in its main file's header,
+  `Requires Plugin Versions: revit-rental 2.0.0, website-starter 2.0.0`;
+  WordPress ignores it, and wp-sites refuses a site that pins an older one.
 - **Unique prefix per plugin** (e.g. `trueform`), applied to PHP
   functions/hooks, option keys, transients, CPT slugs, REST namespaces, CSS
   classes and the version constant. Never reuse another plugin's prefix.

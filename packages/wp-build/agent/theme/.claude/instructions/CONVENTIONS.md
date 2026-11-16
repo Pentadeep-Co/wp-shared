@@ -57,6 +57,9 @@ theme on the site.
   domain, pattern slugs, and CSS custom properties/classes (e.g.
   `pentadeeptwo` / `PENTADEEPTWO_` / `--pd-`). Never reuse another theme's
   prefix.
+- **A theme that needs certain plugin versions** declares the lowest of each
+  in `wp/style.css`: `Requires Plugin Versions: true-form 2.0.0, revit-rental 2.0.0`.
+  WordPress ignores it; wp-sites refuses a site that pins an older one.
 - **Path constants from `get_template_directory()` / `get_template_directory_uri()`**
   — local dev links the theme from outside the web root, so never resolve to a
   physical path.
