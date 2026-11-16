@@ -1,0 +1,15 @@
+{
+  "name": "wp-shared",
+  "private": true,
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "type-check": "pnpm -r type-check",
+    "link-site": "wp-build link-site"
+  },
+  "devDependencies": {
+    "@pentadeep/wp-build": "workspace:*"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "skills": {
+    "web-animation-design": {
+      "source": "vercel-labs/open-agents",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/web-animation-design/SKILL.md",
+      "computedHash": "dcd3f6da245643cd00ef93ad73ea62edc3ae925c6d7763c0675892441d6ba6c3"
+    },
+    "design-taste-frontend": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-skill/SKILL.md",
+      "ref": "b482f7a970abb98c4108d4a9f761e458c64cefc8",
+      "computedHash": "2e064e92aca020b2e0bad69326fe7ea55d59005ed53d1a8cbce1bd135d44b8b3"
+    },
+    "redesign-existing-projects": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/redesign-skill/SKILL.md",
+      "ref": "b482f7a970abb98c4108d4a9f761e458c64cefc8",
+      "computedHash": "d5a62efaf36fa52ea1966e06ce74452b3466a4f179af34fbce65f2c8e5461349"
+    }
+  }
+}

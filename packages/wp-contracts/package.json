@@ -1,0 +1,11 @@
+{
+  "name": "@pentadeep/wp-contracts",
+  "version": "1.0.0",
+  "description": "Type contracts of Pentadeep plugins' public browser APIs (window.SourceCap, window.WebStarter), for the plugins and themes that use them. Types only.",
+  "license": "UNLICENSED",
+  "exports": {
+    "./sourcecap": "./sourcecap.ts",
+    "./webstarter": "./webstarter.ts"
+  },
+  "files": ["*.ts"]
+}

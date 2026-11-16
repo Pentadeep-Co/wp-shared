@@ -1,0 +1,100 @@
+name: Release
+
+# The release workflow every Pentadeep plugin and theme repo calls:
+#
+#   on:
+#     pull_request: { types: [closed], branches: [main] }
+#     workflow_dispatch:
+#   permissions: { contents: write }
+#   jobs:
+#     release:
+#       if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
+#       uses: Pentadeep-Co/wp-shared/.github/workflows/release.yml@v1.0.0
+#
+# It reads the caller's package.json: the tag is `<slug>-v<version>` and the
+# asset `<slug>-v<version>.zip` — the names wp-sites pins and downloads. A merge
+# whose version already has a release publishes nothing, so only a merged
+# `wp-build release` PR (a version bump) releases. Nothing deploys from here:
+# sites are deployed by wp-sites.
+
+on:
+  workflow_call:
+
+permissions:
+  contents: write
+
+concurrency:
+  # One release at a time per repo; never cancel one in flight.
+  group: release-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve the ref to release
+        id: target
+        env:
+          EVENT: ${{ github.event_name }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          # A merged PR releases exactly its merge commit; a manual run, main's tip.
+          if [ "$EVENT" = "pull_request" ]; then echo "ref=$MERGE_SHA" >> "$GITHUB_OUTPUT"; else echo "ref=$GITHUB_SHA" >> "$GITHUB_OUTPUT"; fi
+
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ steps.target.outputs.ref }}
+
+      - name: Resolve version and tag
+        id: meta
+        run: |
+          version="$(jq -r '.version' package.json)"
+          slug="$(jq -r '.release.slug // .release.tagPrefix // .name' package.json)"
+          tag="${slug}-v${version}"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          # Pre-release when the version carries a hyphenated tag (e.g. 0.9.0-beta.1).
+          if echo "$version" | grep -q '-'; then echo "prerelease=true" >> "$GITHUB_OUTPUT"; else echo "prerelease=false" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Skip if already released
+        id: guard
+        env:
+          TAG: ${{ steps.meta.outputs.tag }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists — nothing to do."
+            echo "released=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "released=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # The pnpm version comes from the repo's package.json "packageManager".
+      - uses: pnpm/action-setup@v6
+        if: steps.guard.outputs.released == 'true'
+
+      - uses: actions/setup-node@v6
+        if: steps.guard.outputs.released == 'true'
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install
+        if: steps.guard.outputs.released == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Build and package
+        if: steps.guard.outputs.released == 'true'
+        run: pnpm exec wp-build package
+
+      - name: Create the GitHub Release
+        if: steps.guard.outputs.released == 'true'
+        env:
+          TAG: ${{ steps.meta.outputs.tag }}
+          PRERELEASE: ${{ steps.meta.outputs.prerelease }}
+          TARGET: ${{ steps.target.outputs.ref }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          flags="--target $TARGET"
+          [ "$PRERELEASE" = "true" ] && flags="$flags --prerelease"
+          gh release create "$TAG" "dist/${TAG}.zip" $flags --title "$TAG" --notes "Automated release of $TAG."

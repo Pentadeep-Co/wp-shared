@@ -1,0 +1,55 @@
+{
+  "name": "@pentadeep/wp-build",
+  "version": "1.0.0",
+  "description": "Shared tooling for Pentadeep WordPress plugin and theme repos: stamping, packaging and releasing, Vite/TypeScript presets, local site links, and the shared agent files.",
+  "license": "UNLICENSED",
+  "bin": {
+    "wp-build": "bin/wp-build.cjs"
+  },
+  "exports": {
+    "./vite-plugin": {
+      "types": "./presets/vite-plugin.d.mts",
+      "default": "./presets/vite-plugin.mjs"
+    },
+    "./vite-theme": {
+      "types": "./presets/vite-theme.d.mts",
+      "default": "./presets/vite-theme.mjs"
+    },
+    "./wp-proxy": {
+      "types": "./presets/wp-proxy.d.mts",
+      "default": "./presets/wp-proxy.mjs"
+    },
+    "./tsconfig.plugin.json": "./presets/tsconfig.plugin.json",
+    "./tsconfig.theme.json": "./presets/tsconfig.theme.json",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "bin",
+    "src",
+    "presets",
+    "agent",
+    "scripts"
+  ],
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "tsx": "^4.19.3",
+    "vite-plugin-live-reload": "^3.1.0"
+  },
+  "peerDependencies": {
+    "vite": ">=8.0.0"
+  },
+  "peerDependenciesMeta": {
+    "vite": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/archiver": "^6.0.3",
+    "@types/node": "^25.5.0",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.10"
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  }
+}

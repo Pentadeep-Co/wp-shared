@@ -1,0 +1,25 @@
+{
+  "name": "@pentadeep/wp-verify",
+  "version": "1.0.0",
+  "description": "Checks a WordPress theme's build on its local site in a real browser: rules, design specs from Figma, and behaviours.",
+  "license": "UNLICENSED",
+  "bin": {
+    "wp-verify": "bin/wp-verify.cjs"
+  },
+  "exports": {
+    ".": "./src/lib/config.ts"
+  },
+  "types": "./src/lib/config.ts",
+  "files": ["bin", "src", "README.md"],
+  "dependencies": {
+    "playwright": "1.63.0",
+    "tsx": "^4.19.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^6.0.3"
+  },
+  "scripts": {
+    "type-check": "tsc -p src --noEmit"
+  }
+}
